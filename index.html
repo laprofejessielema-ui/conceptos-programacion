@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taller Interactivo: Fundamentos de Programación (Individual)</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #8e44ad;
+            --accent: #e67e22;
+            --bg: #f4f6f9;
+            --card-bg: #ffffff;
+            --text: #333;
+            --border: #dcdde1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 500;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .timer-box {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .save-indicator {
+            background: #27ae60;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            display: none;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 25px auto;
+            padding: 0 20px;
+        }
+
+        .questions-panel {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+        }
+
+        .panel-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 15px;
+        }
+
+        .reset-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .level-header {
+            background: var(--secondary);
+            color: white;
+            padding: 12px 18px;
+            border-radius: 8px;
+            margin: 30px 0 15px 0;
+            font-size: 1.15rem;
+            font-weight: bold;
+        }
+
+        .level-header:first-child {
+            margin-top: 0;
+        }
+
+        .exercise-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .exercise-title {
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1.05rem;
+        }
+
+        .options-list {
+            list-style: none;
+            margin-top: 10px;
+        }
+
+        .options-list li {
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .hint-btn {
+            background: #f1c40f;
+            color: #333;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .hint-text {
+            display: none;
+            background: #fef9e7;
+            border: 1px solid #f9e79f;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            color: #7d6608;
+        }
+
+        textarea {
+            width: 100%;
+            height: 95px;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            resize: vertical;
+            margin-top: 8px;
+            font-size: 0.95rem;
+        }
+
+        .student-inputs {
+            margin-bottom: 25px;
+            background: #f3e5f5;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .student-inputs input {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            width: 100%;
+            font-size: 0.95rem;
+            margin-top: 5px;
+        }
+
+        .submit-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 16px 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 25px;
+            transition: background 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: #219150;
+        }
+
+        @media print {
+            header, .hint-btn, .submit-btn, .reset-btn {
+                display: none !important;
+            }
+            .container {
+                max-width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            .questions-panel {
+                border: none;
+                box-shadow: none;
+            }
+            textarea {
+                border: 1px solid #000;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <h1>Taller Interactivo: Fundamentos de Programación</h1>
+            <div style="display:flex; align-items:center; gap:15px;">
+                <span id="saveIndicator" class="save-indicator">💾 Guardado</span>
+                <div class="timer-box">
+                    ⏱️ Tiempo: <span id="timer">30:00</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="questions-panel">
+            <div class="panel-top-bar">
+                <h2 style="color:var(--primary);">Registro del Estudiante</h2>
+                <button class="reset-btn" onclick="clearProgress()">🗑️ Limpiar Respuestas</button>
+            </div>
+            
+            <div class="student-inputs">
+                <div>
+                    <label style="font-weight:bold;">Nombre Completo del Estudiante:</label>
+                    <input type="text" id="st1" class="saveable" placeholder="Escribe tu nombre y apellido aquí">
+                </div>
+            </div>
+
+            <!-- NIVEL 1 -->
+            <div class="level-header">Nivel 1: Conceptos Fundamentales de Programación</div>
+            
+            <div class="exercise-card">
+                <div class="exercise-title">1.1. ¿Qué es un Algoritmo?</div>
+                <p>Explica con tus propias palabras qué es un algoritmo y da un ejemplo de la vida cotidiana (que no sea de computación).</p>
+                <textarea id="c1_1" class="saveable" placeholder="Escribe tu explicación y ejemplo cotidiano..."></textarea>
+            </div>
+
+            <div class="exercise-card">
+                <div class="exercise-title">1.2. Algoritmo vs. Programa (Múltiple Opción)</div>
+                <p>¿Cuál es la principal diferencia entre un algoritmo y un programa de computadora?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="c1_2" value="A" class="saveable-radio"> A) El algoritmo se escribe para las personas y el programa es el algoritmo traducido a un lenguaje que la computadora entiende.</label></li>
+                    <li><label><input type="radio" name="c1_2" value="B" class="saveable-radio"> B) Un algoritmo siempre usa imágenes y un programa solo usa números.</label></li>
+                    <li><label><input type="radio" name="c1_2" value="C" class="saveable-radio"> C) No hay diferencia, significan exactamente lo mismo.</label></li>
+                </ul>
+            </div>
+
+            <div class="exercise-card">
+                <div class="exercise-title">1.3. Definición de Secuencia</div>
+                <p>¿Qué sucede si cambiamos el orden de las instrucciones dentro de una secuencia de programación?</p>
+                <textarea id="c1_3" class="saveable" placeholder="Explica qué ocurre si se altera el orden secuencial..."></textarea>
+            </div>
+
+            <!-- NIVEL 2 -->
+            <div class="level-header">Nivel 2: Eventos y Toma de Decisiones (Condicionales)</div>
+
+            <div class="exercise-card">
+                <div class="exercise-title">2.1. Concepto de Evento</div>
+                <p>En programación, un <b>Evento</b> es una acción que desencadena una respuesta. Da 2 ejemplos de eventos que realizan los usuarios al interactuar con un celular.</p>
+                <textarea id="c2_1" class="saveable" placeholder="Ejemplo 1 y Ejemplo 2..."></textarea>
+            </div>
+
+            <div class="exercise-card">
+                <div class="exercise-title">2.2. Lógica Condicional (Si... Entonces)</div>
+                <p>Completa la siguiente estructura condicional para una app de semáforo inteligente:<br>
+                <code>SI (color == 'Rojo') ENTONCES: ___________ SI NO: ___________</code></p>
+                <textarea id="c2_2" class="saveable" placeholder="Escribe la acción para ENTONCES y para SI NO..."></textarea>
+            </div>
+
+            <div class="exercise-card">
+                <div class="exercise-title">2.3. Identificación de Bucles/Repeticiones (Múltiple Opción)</div>
+                <p>¿Para qué se utiliza una estructura de bucle o repetición en programación?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="c2_3" value="A" class="saveable-radio"> A) Para apagar el sistema cuando hay un error.</label></li>
+                    <li><label><input type="radio" name="c2_3" value="B" class="saveable-radio"> B) Para repetir un grupo de instrucciones múltiples veces sin escribir el código de nuevo.</label></li>
+                    <li><label><input type="radio" name="c2_3" value="C" class="saveable-radio"> C) Para cambiar los colores de la pantalla automáticamente.</label></li>
+                </ul>
+            </div>
+
+            <!-- NIVEL 3 -->
+            <div class="level-header">Nivel 3: Detección de Bugs (Errores) y Variables</div>
+
+            <div class="exercise-card">
+                <div class="exercise-title">3.1. ¿Qué es un Bug o Error de Código?</div>
+                <p>¿A qué se le llama "Bug" en programación y por qué es importante realizar pruebas (debugging) antes de publicar una app?</p>
+                <textarea id="c3_1" class="saveable" placeholder="Explica el concepto de Bug y la importancia de probar la app..."></textarea>
+            </div>
+
+            <div class="exercise-card">
+                <div class="exercise-title">3.2. Concepto de Variable</div>
+                <p>Imagina que una <b>Variable</b> es una caja etiquetada en la memoria. Si tenemos la caja llamada <code>Puntaje</code> con el valor 10 y le sumamos 5, ¿cuál es el nuevo valor guardado en la variable?</p>
+                <textarea id="c3_2" class="saveable" placeholder="Escribe el valor resultante y explica por qué..."></textarea>
+                <button class="hint-btn" onclick="toggleHint('hc3_2')">💡 Ver pista</button>
+                <div id="hc3_2" class="hint-text">Las variables reemplazan su contenido anterior por el nuevo resultado de la operación.</div>
+            </div>
+
+            <div class="exercise-card">
+                <div class="exercise-title">3.3. Detección de Error Lógico</div>
+                <p>Un alumno programó una alarma que debía sonar a las 7:00 AM, pero suena a las 7:00 PM. ¿Es un error de sintaxis (del lenguaje) o un error de lógica del programador?</p>
+                <textarea id="c3_3" class="saveable" placeholder="Justifica qué tipo de error es y por qué..."></textarea>
+            </div>
+
+            <!-- NIVEL 4 -->
+            <div class="level-header">Nivel 4: Creación y Pseudocódigo</div>
+
+            <div class="exercise-card">
+                <div class="exercise-title">4.1. Diseño de Algoritmo en Pseudocódigo</div>
+                <p>Escribe paso a paso el algoritmo (en lenguaje natural ordenado) para una aplicación de inicio de sesión de usuario (pedir clave, verificar si es correcta y dar la bienvenida o mostrar error).</p>
+                <textarea id="c4_1" class="saveable" placeholder="Paso 1: ... Paso 2: ... Paso 3: ..."></textarea>
+            </div>
+
+            <button class="submit-btn" onclick="generateReport()">📄 Guardar y Generar Reporte Imprimible</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleHint(hintId) {
+            const hint = document.getElementById(hintId);
+            if (hint.style.display === 'block') {
+                hint.style.display = 'none';
+            } else {
+                hint.style.display = 'block';
+            }
+        }
+
+        // CRONÓMETRO DE 30 MINUTOS INDIVIDUAL
+        const INITIAL_TIME = 30 * 60; // 1800 segundos
+        let savedSeconds = localStorage.getItem('indiv_conceptos_timer');
+        let totalSeconds;
+
+        if (savedSeconds && !isNaN(savedSeconds) && parseInt(savedSeconds) <= INITIAL_TIME && parseInt(savedSeconds) > 0) {
+            totalSeconds = parseInt(savedSeconds);
+        } else {
+            totalSeconds = INITIAL_TIME;
+            localStorage.setItem('indiv_conceptos_timer', INITIAL_TIME);
+        }
+
+        const timerElement = document.getElementById('timer');
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            timerElement.textContent = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+
+        updateTimerDisplay();
+
+        const countdown = setInterval(() => {
+            if (totalSeconds <= 0) {
+                clearInterval(countdown);
+                alert("¡El tiempo de la actividad (30 min) ha finalizado!");
+            } else {
+                totalSeconds--;
+                updateTimerDisplay();
+                localStorage.setItem('indiv_conceptos_timer', totalSeconds);
+            }
+        }, 1000);
+
+        // AUTOGUARDADO EN LOCALSTORAGE
+        const saveableInputs = document.querySelectorAll('.saveable');
+        const saveableRadios = document.querySelectorAll('.saveable-radio');
+        const saveIndicator = document.getElementById('saveIndicator');
+
+        function triggerSaveNotice() {
+            if (saveIndicator) {
+                saveIndicator.style.display = 'inline-block';
+                setTimeout(() => {
+                    saveIndicator.style.display = 'none';
+                }, 1200);
+            }
+        }
+
+        saveableInputs.forEach(input => {
+            const savedVal = localStorage.getItem('indiv_conceptos_' + input.id);
+            if (savedVal !== null) {
+                input.value = savedVal;
+            }
+
+            input.addEventListener('input', () => {
+                localStorage.setItem('indiv_conceptos_' + input.id, input.value);
+                triggerSaveNotice();
+            });
+        });
+
+        saveableRadios.forEach(radio => {
+            const savedVal = localStorage.getItem('indiv_conceptos_radio_' + radio.name);
+            if (savedVal && radio.value === savedVal) {
+                radio.checked = true;
+            }
+
+            radio.addEventListener('change', () => {
+                if (radio.checked) {
+                    localStorage.setItem('indiv_conceptos_radio_' + radio.name, radio.value);
+                    triggerSaveNotice();
+                }
+            });
+        });
+
+        function clearProgress() {
+            if (confirm("¿Estás seguro de que deseas borrar tus respuestas para empezar de nuevo?")) {
+                localStorage.clear();
+
+                document.querySelectorAll('.saveable').forEach(input => {
+                    input.value = '';
+                });
+
+                document.querySelectorAll('.saveable-radio').forEach(radio => {
+                    radio.checked = false;
+                });
+
+                totalSeconds = INITIAL_TIME;
+                localStorage.setItem('indiv_conceptos_timer', INITIAL_TIME);
+                updateTimerDisplay();
+
+                alert("Respuestas borradas y reloj reiniciado a 30:00.");
+            }
+        }
+
+        function generateReport() {
+            const st1 = document.getElementById('st1').value;
+
+            if (!st1) {
+                alert("Por favor escribe tu nombre completo antes de generar el reporte.");
+                return;
+            }
+
+            window.print();
+        }
+    </script>
+</body>
+</html>
